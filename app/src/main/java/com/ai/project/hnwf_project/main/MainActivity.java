@@ -9,7 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.ai.project.hnwf_project.R;
+import com.ai.project.hnwf_project.data.SaJoData;
 import com.ai.project.hnwf_project.util.GetHangle;
+import com.ai.project.hnwf_project.util.GetNearValue;
 
 import static java.lang.Math.exp;
 
@@ -22,27 +24,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int out_count = 6;
     private double first_w[][] = new double[input_count][hidden_count];
     private double second_w[][] = new double[hidden_count][out_count];
-    /*   private double Input_one[] = {11, 17, 4, 2016, 11, 27, 3, 1};
-       private double Input_two[] = {0, 20, 16, 2016, 11, 27, 13, 1};
-       private double Input_three[] = {14, 11, 0, 2016, 2, 8, 12, 2};
-       private double Input_four[] = {7, 0, 1, 2020, 5, 16, 17, 1};*/
-    private double Input_one[] = {0.11, 0.17, 0.04, 0, 0.11, 0.27, 0.03, 0.1};
-    private double Input_two[] = {0, 20, 0.16, 0, 0.11, 0.27, 0.13, 0.1};
-    private double Input_three[] = {0.14, 0.11, 0, 0, 0.02, 0.08, 0.12, 0.2};
-    private double Input_four[] = {0.07, 0, 0.01, 0.04, 0.05, 0.16, 0.17, 0.1};
-    /*private double Input_one[] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-    private double Input_two[] = {0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
-    private double Input_three[] = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3};
-    private double Input_four[] = {0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4};*/
-    private double input_collection[][] = {Input_one, Input_two, Input_three, Input_four};
+    private double input_collection[][] = {SaJoData.Input_1, SaJoData.Input_2, SaJoData.Input_3, SaJoData.Input_4};
     private double hidden[] = new double[hidden_count];
     private double out[][] = new double[input_collection.length][out_count];
-    // private double target[][] = {{9, 20, 0, 11, 13, 0}, {6, 16, 4, 9, 4, 0}, {11, 7, 4, 9, 4, 4}, {0, 6, 21, 1, 4, 4}};
-    private double target[][] = {{0.09, 0.20, 0, 0.11, 0.13, 0}, {0.06, 0.16, 0.04, 0.09, 0.04, 0}, {0.11, 0.07, 0.04, 0.09, 0.04, 0.04}
-            , {0, 0.06, 0.21, 0.01, 0.04, 0.04}};
-    /*  private double target[][] = {{0.2, 0.3, 0.4, 0.5, 0.6, 0.7}, {0.4, 0.5, 0.6, 0.7, 0.8, 0.9},
-              {0.6, 0.7, 0.8, 0.9, 0.9, 0.9}, {0.8, 0.8, 0.8, 0.8, 0.8, 0.8}};*/
-    private double n = 0.001;
+    private double target[][] = SaJoData.target;
+    private double n = 0.005;
+
+    private String sumHangle = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /*    String a = "안";
         Log.e("test", hangulToJaso(a));
         hangulToJaso(a);*/
+        //Log.e("nearData", String.valueOf(target[0][3]));
         Set_weight();
         asyncTask.execute();
     }
@@ -103,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void Traning() {
         for (int all = 0; all < input_collection.length; all++) {
-
             for (int k = 0; k < hidden_count; k++) {
                 double sum = 0;
                 for (int i = 0; i < input_count; i++) {
@@ -138,7 +126,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AsyncTask asyncTask = new AsyncTask() {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 10000000; traning++) {
+            for (int traning = 0; traning < 50000; traning++) {
+                Log.e("traing", String.valueOf(traning));
                 Traning();
             }
             return null;
@@ -150,8 +139,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for (int i = 0; i < out.length; i++) {
                 for (int j = 0; j < out[i].length; j++) {
                     Log.e("test", String.valueOf(out[i][j]));
+                    if (j == 0 || j == 3) {
+                        Log.e("초성", String.valueOf(GetNearValue.getNearCHO(out[i][j])));
+                        sumHangle += GetHangle.ChoSung_String[(int) GetNearValue.getNearCHO(out[i][j])];
+                        //Log.e("초성", String.valueOf(out[i][j] * 12));
+                    } else if (j == 1 || j == 4) {
+                        Log.e("중성", String.valueOf(GetNearValue.getNearJUNG(out[i][j])));
+                        sumHangle += GetHangle.JungSung_String[(int) GetNearValue.getNearJUNG(out[i][j])];
+                    } else if (j == 2 || j == 5) {
+                        Log.e("종성", String.valueOf(GetNearValue.getNearJONG(out[i][j])));
+                        sumHangle += GetHangle.JongSung_String[(int) GetNearValue.getNearJONG(out[i][j])];
+                    }
                 }
             }
+            Log.e("완성", sumHangle);
         }
     };
+
 }
