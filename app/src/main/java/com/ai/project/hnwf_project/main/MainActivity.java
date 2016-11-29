@@ -1,5 +1,6 @@
 package com.ai.project.hnwf_project.main;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,8 +11,12 @@ import android.widget.EditText;
 
 import com.ai.project.hnwf_project.R;
 import com.ai.project.hnwf_project.data.SaJoData;
+import com.ai.project.hnwf_project.db.DBManager;
+import com.ai.project.hnwf_project.traing.TrainingService;
 import com.ai.project.hnwf_project.util.GetHangle;
 import com.ai.project.hnwf_project.util.GetNearValue;
+
+import java.util.ArrayList;
 
 import static java.lang.Math.exp;
 
@@ -32,18 +37,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String sumHangle = "";
 
+    private ArrayList<ArrayList<Double>> first_wList = new ArrayList();
+    private ArrayList<ArrayList<Double>> second_wList = new ArrayList();
+    private DBManager dbManager;
+    private String jsonArray;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         name_input = (EditText) findViewById(R.id.name_input);
         succes_btn = (Button) findViewById(R.id.succes_btn);
-    /*    String a = "안";
-        Log.e("test", hangulToJaso(a));
-        hangulToJaso(a);*/
-        //Log.e("nearData", String.valueOf(target[0][3]));
-        Set_weight();
-        asyncTask.execute();
+        startService(new Intent(this, TrainingService.class));
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopService(new Intent(this, TrainingService.class));
+        super.onDestroy();
     }
 
     @Override
@@ -82,12 +93,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for (int j = 0; j < hidden_count; j++) {
                 first_w[i][j] = Math.random();
             }
+
         }
         for (int i = 0; i < hidden_count; i++) {
             for (int j = 0; j < out_count; j++) {
                 second_w[i][j] = Math.random();
             }
         }
+    }
+
+    private void Get_weight() {
+        for (int i = 0; i < input_count; i++) {
+            ArrayList<Double> doubles = new ArrayList<>();
+            for (int j = 0; j < hidden_count; j++) {
+                doubles.add(first_w[i][j]);
+            }
+            first_wList.add(doubles);
+        }
+        for (int i = 0; i < hidden_count; i++) {
+            ArrayList<Double> doubles = new ArrayList<>();
+            for (int j = 0; j < out_count; j++) {
+                doubles.add(second_w[i][j]);
+            }
+            second_wList.add(doubles);
+        }
+        Log.e("list_Test", first_wList.toString());
+        Log.e("list_Test", second_wList.toString());
     }
 
     private void Traning() {
@@ -126,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AsyncTask asyncTask = new AsyncTask() {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 50000; traning++) {
+            for (int traning = 0; traning < 1000; traning++) {
                 Log.e("traing", String.valueOf(traning));
                 Traning();
             }
