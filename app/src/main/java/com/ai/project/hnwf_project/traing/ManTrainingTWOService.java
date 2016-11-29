@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.util.Log;
 import com.ai.project.hnwf_project.data.SaJoData;
 import com.ai.project.hnwf_project.db.DBManager;
 import com.ai.project.hnwf_project.util.Contact;
+import com.ai.project.hnwf_project.util.GetHangle;
+import com.ai.project.hnwf_project.util.GetNearValue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,20 +25,20 @@ import java.util.ArrayList;
 import static java.lang.Math.exp;
 
 /**
- * Created by YunTaeSik on 2016-11-28.
+ * Created by sky87 on 2016-11-29.
  */
-public class TrainingService extends Service {
-    private int input_count = 8;
-    private int hidden_count = 8;
-    private int out_count = 6;
+
+public class ManTrainingTWOService extends Service {
+    private int input_count = 7;
+    private int hidden_count = 7;
+    private int out_count = 3;
     private double first_w[][] = new double[input_count][hidden_count];
     private double second_w[][] = new double[hidden_count][out_count];
-    private double input_collection[][] = {SaJoData.Input_1, SaJoData.Input_2, SaJoData.Input_3, SaJoData.Input_4};
+    private double input_collection[][] = {SaJoData.man_Input_1, SaJoData.man_Input_2, SaJoData.man_Input_3, SaJoData.man_Input_4};
     private double hidden[] = new double[hidden_count];
     private double out[][] = new double[input_collection.length][out_count];
-    private double target[][] = SaJoData.target;
-    private double n = 0.005;
-    private String sumHangle = "";
+    private double target[][] = SaJoData.man_target_one;
+    private double n = 0.1;
 
     private DBManager dbManager;
     private Cursor cursor;
@@ -53,22 +56,17 @@ public class TrainingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        getDB();
-        Get_weight(); // 가중치 얻기
-        SaveWeight(); //DB 저장
+        getDB_Traing_Save();
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public boolean stopService(Intent name) {
-        Log.e("stopService", "stopService");
-
         return super.stopService(name);
     }
 
     @Override
     public void onDestroy() {
-
         super.onDestroy();
     }
 
@@ -104,11 +102,11 @@ public class TrainingService extends Service {
         }
     }
 
-    private void getDB() {
+    private void getDB_Traing_Save() {
         dbManager = new DBManager(getApplicationContext(), "WEIGHT", null, 1);
         db = dbManager.getWritableDatabase();
-        db.execSQL("CREATE TABLE if not exists '" + Contact.WEIGHT + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
-        cursor = db.query("'" + Contact.WEIGHT + "'", null, null, null, null, null, null);
+        db.execSQL("CREATE TABLE if not exists '" + Contact.MAN_WEIGHT_ONE + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        cursor = db.query("'" + Contact.MAN_WEIGHT_ONE + "'", null, null, null, null, null, null);
         if (cursor.getCount() > 0) {
             Log.e("test", "DB있다");
             cursor.moveToNext();
@@ -138,49 +136,19 @@ public class TrainingService extends Service {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.e("get_first_wList", String.valueOf(get_first_wList.size()));
-            for (int i = 0; i < get_first_wList.size(); i++) {
-                for (int j = 0; j < get_first_wList.get(i).size(); j++) {
-                    first_w[i][j] = get_first_wList.get(i).get(j).doubleValue();
-                }
-                Log.e("get_first_wList_item", String.valueOf(get_first_wList.get(i).size()));
-            }
-            for (int i = 0; i < get_second_wList.size(); i++) {
-                for (int j = 0; j < get_second_wList.get(i).size(); j++) {
-                    second_w[i][j] = get_second_wList.get(i).get(j).doubleValue();
-                }
-            }
-        } else {
-            Log.e("test", "DB없다");
             for (int i = 0; i < input_count; i++) {
                 for (int j = 0; j < hidden_count; j++) {
-                    first_w[i][j] = Math.random();
+                    first_w[i][j] = get_first_wList.get(i).get(j).doubleValue();
                 }
-
             }
             for (int i = 0; i < hidden_count; i++) {
                 for (int j = 0; j < out_count; j++) {
-                    second_w[i][j] = Math.random();
+                    second_w[i][j] = get_second_wList.get(i).get(j).doubleValue();
                 }
             }
-            Get_weight();
-            JSONObject json = new JSONObject();
-            try {
-                json.put("first_wList", new JSONArray(get_first_wList));
-                json.put("second_wList", new JSONArray(get_second_wList));
-                jsonArray = json.toString();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            ContentValues values = new ContentValues();
-            values.put("json", jsonArray);
-            db.insert("'" + Contact.WEIGHT + "'", null, values);
         }
-
-        for (int i = 0; i < 1000; i++) {
-            Log.e("Traning", String.valueOf(i));
-            Traning();
-        }
+        asyncTask asyncTask = new asyncTask();
+        asyncTask.execute();
     }
 
     private void Get_weight() {
@@ -213,16 +181,15 @@ public class TrainingService extends Service {
         }
         ContentValues values = new ContentValues();
         values.put("json", jsonArray);
-        db.update("'" + Contact.WEIGHT + "'", values, "_id=?", new String[]{cursor_id});
+        db.update("'" + Contact.MAN_WEIGHT_ONE + "'", values, "_id=?", new String[]{cursor_id});
         db.close();
     }
-/*
 
-    private AsyncTask asyncTask = new AsyncTask() {
+    private class asyncTask extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 1000; traning++) {
-                Log.e("traing", String.valueOf(traning));
+            for (int i = 0; i < 10000; i++) {
+                Log.e("Traning", String.valueOf(i));
                 Traning();
             }
             return null;
@@ -231,23 +198,27 @@ public class TrainingService extends Service {
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
+            Get_weight();
+            SaveWeight();
+            String sumHangle = "";
             for (int i = 0; i < out.length; i++) {
                 for (int j = 0; j < out[i].length; j++) {
                     Log.e("test", String.valueOf(out[i][j]));
                     if (j == 0 || j == 3) {
                         Log.e("초성", String.valueOf(GetNearValue.getNearCHO(out[i][j])));
-                        sumHangle += GetHangle.ChoSung_String[(int) GetNearValue.getNearCHO(out[i][j])];
-                        //Log.e("초성", String.valueOf(out[i][j] * 12));
+                        sumHangle += GetHangle.Man_ChoSung_String[(int) GetNearValue.getNearCHO(out[i][j])];
                     } else if (j == 1 || j == 4) {
                         Log.e("중성", String.valueOf(GetNearValue.getNearJUNG(out[i][j])));
-                        sumHangle += GetHangle.JungSung_String[(int) GetNearValue.getNearJUNG(out[i][j])];
+                        sumHangle += GetHangle.Man_JungSung_String[(int) GetNearValue.getNearJUNG(out[i][j])];
                     } else if (j == 2 || j == 5) {
                         Log.e("종성", String.valueOf(GetNearValue.getNearJONG(out[i][j])));
-                        sumHangle += GetHangle.JongSung_String[(int) GetNearValue.getNearJONG(out[i][j])];
+                        sumHangle += GetHangle.Man_JongSung_String[(int) GetNearValue.getNearJONG(out[i][j])];
                     }
                 }
             }
             Log.e("완성", sumHangle);
         }
-    };*/
+    }
+
+    ;
 }
