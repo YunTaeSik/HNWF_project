@@ -43,7 +43,7 @@ public class GetNearValue {
     public static double getNearJONG(double output) {
         double data[] = null;
 
-        data = new double[]{0.0 / 5.0, 1.0 / 5.0, 2.0 / 5.0, 3.0 / 5.0, 4.0 / 5.0, 5.0 / 5.0};
+        data = new double[]{0.0 / 4.0, 1.0 / 4.0, 2.0 / 4.0, 3.0 / 4.0, 4.0 / 4.0};
         double min = 1.0;    // 기준데이터 최소값 - Interger형의 최대값으로 값을 넣는다.
         double nearData = 0.0;                       // 가까운 값을 저장할 변수
         // 2. process

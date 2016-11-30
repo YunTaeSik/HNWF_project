@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.ai.project.hnwf_project.util.Contact;
+
 
 /**
  * Created by sky87 on 2016-06-23.
@@ -17,7 +19,10 @@ public class DBManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-       //  db.execSQL("CREATE TABLE " + "table_name"+ "( _id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT not null);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.MAN_WEIGHT_ONE + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.MAN_WEIGHT_TWO + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.GIRL_WEIGHT_ONE + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.GIRL_WEIGHT_TWO + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
     }
 
     @Override

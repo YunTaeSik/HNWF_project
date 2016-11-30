@@ -1,15 +1,24 @@
 package com.ai.project.hnwf_project.traing;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.ai.project.hnwf_project.data.SaJoData;
+import com.ai.project.hnwf_project.db.DBManager;
+import com.ai.project.hnwf_project.util.Contact;
 import com.ai.project.hnwf_project.util.GetHangle;
 import com.ai.project.hnwf_project.util.GetNearValue;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static java.lang.Math.exp;
 
@@ -38,8 +47,11 @@ public class TraningService extends Service {
     //여자 인풋
     private double input_collection_girl[][] = {SaJoData.man_Input_1, SaJoData.man_Input_2, SaJoData.man_Input_3, SaJoData.man_Input_4};
 
-    private double hidden_man[] = new double[hidden_count];
-    private double hidden_girl[] = new double[hidden_count];
+    private double hidden_man_one[] = new double[hidden_count];
+    private double hidden_man_two[] = new double[hidden_count];
+    private double hidden_girl_one[] = new double[hidden_count];
+    private double hidden_girl_two[] = new double[hidden_count];
+
     private double out_man_one[][] = new double[input_collection_man.length][out_count];
     private double out_man_two[][] = new double[input_collection_man.length][out_count];
 
@@ -52,6 +64,8 @@ public class TraningService extends Service {
     private double target_girl_one[][] = SaJoData.man_target_one;
     private double target_girl_two[][] = SaJoData.man_target_two;
 
+    private DBManager dbManager;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -61,17 +75,38 @@ public class TraningService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Set_weight();
-        asyncTask_Man_One asyncTask_man_one = new asyncTask_Man_One();
-        asyncTask_man_one.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 남자 가운데 글자
 
-        asyncTask_Man_Two asyncTask_man_two = new asyncTask_Man_Two();
-        asyncTask_man_two.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 남자  마지막 글자
+        dbManager = new DBManager(getApplicationContext(), "WEIGHT", null, 1);
+        SQLiteDatabase db = dbManager.getWritableDatabase();
 
-        asyncTask_Gril_One asyncTask_gril_one = new asyncTask_Gril_One();
-        asyncTask_gril_one.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 여자 가운데 글자
+        Cursor cursor_man_one = db.query("'" + Contact.MAN_WEIGHT_ONE + "'", null, null, null, null, null, null);
+        if (cursor_man_one.getCount() < 1) {
+            asyncTask_Man_One asyncTask_man_one = new asyncTask_Man_One();
+            asyncTask_man_one.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 남자 가운데 글자
+        }
+        cursor_man_one.close();
 
-        asyncTask_Gril_Two asyncTask_gril_two = new asyncTask_Gril_Two();
-        asyncTask_gril_two.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 여자 마지막 글자
+        Cursor cursor_man_two = db.query("'" + Contact.MAN_WEIGHT_TWO + "'", null, null, null, null, null, null);
+        if (cursor_man_two.getCount() < 1) {
+            asyncTask_Man_Two asyncTask_man_two = new asyncTask_Man_Two();
+            asyncTask_man_two.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 남자  마지막 글자
+        }
+        cursor_man_two.close();
+
+        Cursor cursor_girl_one = db.query("'" + Contact.GIRL_WEIGHT_ONE + "'", null, null, null, null, null, null);
+        if (cursor_girl_one.getCount() < 1) {
+            asyncTask_Gril_One asyncTask_gril_one = new asyncTask_Gril_One();
+            asyncTask_gril_one.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 여자 가운데 글자
+        }
+        cursor_girl_one.close();
+
+        Cursor cursor_girl_two = db.query("'" + Contact.GIRL_WEIGHT_TWO + "'", null, null, null, null, null, null);
+        if (cursor_girl_two.getCount() < 1) {
+            asyncTask_Gril_Two asyncTask_gril_two = new asyncTask_Gril_Two();
+            asyncTask_gril_two.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 여자 마지막 글자
+        }
+        cursor_girl_two.close();
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -130,12 +165,12 @@ public class TraningService extends Service {
                 for (int i = 0; i < input_count; i++) {
                     sum += input_collection_man[all][i] * first_w_man_one[i][k];
                 }
-                hidden_man[k] = 1 / (1 + exp(-sum));
+                hidden_man_one[k] = 1 / (1 + exp(-sum));
             }
             for (int k = 0; k < out_count; k++) {
                 double out_sum = 0;
                 for (int i = 0; i < hidden_count; i++) {
-                    out_sum += hidden_man[i] * second_w_man_one[i][k];
+                    out_sum += hidden_man_one[i] * second_w_man_one[i][k];
                 }
                 out_man_one[all][k] = 1 / (1 + exp(-out_sum));
             }
@@ -144,11 +179,11 @@ public class TraningService extends Service {
 
                 for (int i = 0; i < input_count; i++) {
                     for (int j = 0; j < hidden_count; j++) {
-                        first_w_man_one[i][j] += (hidden_man[j] * (1 - hidden_man[j]) * differential * second_w_man_one[j][k] * input_collection_man[all][i]);
+                        first_w_man_one[i][j] += (hidden_man_one[j] * (1 - hidden_man_one[j]) * differential * second_w_man_one[j][k] * input_collection_man[all][i]);
                     }
                 }
                 for (int i = 0; i < second_w_man_one.length; i++) {
-                    second_w_man_one[i][k] += (differential * hidden_man[i]);
+                    second_w_man_one[i][k] += (differential * hidden_man_one[i]);
                 }
             }
 
@@ -159,7 +194,7 @@ public class TraningService extends Service {
     private class asyncTask_Man_One extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 100000; traning++) {
+            for (int traning = 0; traning < 300000; traning++) {
                 Traning_ManOne();
             }
             return null;
@@ -185,7 +220,23 @@ public class TraningService extends Service {
                     }
                 }
             }
+
             Log.e("완성 남자 가운데 글자", sumHangle);
+
+            SQLiteDatabase db = dbManager.getWritableDatabase();
+            JSONObject json = new JSONObject();
+            String jsonArray = null;
+            try {
+                json.put("first_w_man_one", new JSONArray(first_w_man_one));
+                json.put("second_w_man_one", new JSONArray(second_w_man_one));
+                jsonArray = json.toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            ContentValues values = new ContentValues();
+            values.put("json", jsonArray);
+            db.insert("'" + Contact.MAN_WEIGHT_ONE + "'", null, values);
+            db.close();
         }
     }
 
@@ -198,12 +249,12 @@ public class TraningService extends Service {
                 for (int i = 0; i < input_count; i++) {
                     sum += input_collection_man[all][i] * first_w_man_two[i][k];
                 }
-                hidden_man[k] = 1 / (1 + exp(-sum));
+                hidden_man_two[k] = 1 / (1 + exp(-sum));
             }
             for (int k = 0; k < out_count; k++) {
                 double out_sum = 0;
                 for (int i = 0; i < hidden_count; i++) {
-                    out_sum += hidden_man[i] * second_w_man_two[i][k];
+                    out_sum += hidden_man_two[i] * second_w_man_two[i][k];
                 }
                 out_man_two[all][k] = 1 / (1 + exp(-out_sum));
             }
@@ -212,11 +263,11 @@ public class TraningService extends Service {
 
                 for (int i = 0; i < input_count; i++) {
                     for (int j = 0; j < hidden_count; j++) {
-                        first_w_man_two[i][j] += (hidden_man[j] * (1 - hidden_man[j]) * differential * second_w_man_two[j][k] * input_collection_man[all][i]);
+                        first_w_man_two[i][j] += (hidden_man_two[j] * (1 - hidden_man_two[j]) * differential * second_w_man_two[j][k] * input_collection_man[all][i]);
                     }
                 }
                 for (int i = 0; i < second_w_man_two.length; i++) {
-                    second_w_man_two[i][k] += (differential * hidden_man[i]);
+                    second_w_man_two[i][k] += (differential * hidden_man_two[i]);
                 }
             }
 
@@ -226,7 +277,7 @@ public class TraningService extends Service {
     private class asyncTask_Man_Two extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 100000; traning++) {
+            for (int traning = 0; traning < 300000; traning++) {
                 Traning_ManTwo();
             }
             return null;
@@ -252,6 +303,21 @@ public class TraningService extends Service {
                 }
             }
             Log.e("완성 남성 마지막 글자", sumHangle);
+
+            SQLiteDatabase db = dbManager.getWritableDatabase();
+            JSONObject json = new JSONObject();
+            String jsonArray = null;
+            try {
+                json.put("first_w_man_two", new JSONArray(first_w_man_two));
+                json.put("second_w_man_two", new JSONArray(second_w_man_two));
+                jsonArray = json.toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            ContentValues values = new ContentValues();
+            values.put("json", jsonArray);
+            db.insert("'" + Contact.MAN_WEIGHT_TWO + "'", null, values);
+            db.close();
         }
     }
 
@@ -264,12 +330,12 @@ public class TraningService extends Service {
                 for (int i = 0; i < input_count; i++) {
                     sum += input_collection_girl[all][i] * first_w_girl_one[i][k];
                 }
-                hidden_girl[k] = 1 / (1 + exp(-sum));
+                hidden_girl_one[k] = 1 / (1 + exp(-sum));
             }
             for (int k = 0; k < out_count; k++) {
                 double out_sum = 0;
                 for (int i = 0; i < hidden_count; i++) {
-                    out_sum += hidden_girl[i] * second_w_gril_one[i][k];
+                    out_sum += hidden_girl_one[i] * second_w_gril_one[i][k];
                 }
                 out_girl_one[all][k] = 1 / (1 + exp(-out_sum));
             }
@@ -278,11 +344,11 @@ public class TraningService extends Service {
 
                 for (int i = 0; i < input_count; i++) {
                     for (int j = 0; j < hidden_count; j++) {
-                        first_w_girl_one[i][j] += (hidden_girl[j] * (1 - hidden_girl[j]) * differential * second_w_gril_one[j][k] * input_collection_girl[all][i]);
+                        first_w_girl_one[i][j] += (hidden_girl_one[j] * (1 - hidden_girl_one[j]) * differential * second_w_gril_one[j][k] * input_collection_girl[all][i]);
                     }
                 }
                 for (int i = 0; i < second_w_gril_one.length; i++) {
-                    second_w_gril_one[i][k] += (differential * hidden_girl[i]);
+                    second_w_gril_one[i][k] += (differential * hidden_girl_one[i]);
                 }
             }
 
@@ -292,7 +358,7 @@ public class TraningService extends Service {
     private class asyncTask_Gril_One extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 100000; traning++) {
+            for (int traning = 0; traning < 300000; traning++) {
                 Traning_GrilOne();
             }
             return null;
@@ -318,6 +384,21 @@ public class TraningService extends Service {
                 }
             }
             Log.e("완성 여자 가운데 글자", sumHangle);
+
+            SQLiteDatabase db = dbManager.getWritableDatabase();
+            JSONObject json = new JSONObject();
+            String jsonArray = null;
+            try {
+                json.put("first_w_girl_one", new JSONArray(first_w_girl_one));
+                json.put("second_w_gril_one", new JSONArray(second_w_gril_one));
+                jsonArray = json.toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            ContentValues values = new ContentValues();
+            values.put("json", jsonArray);
+            db.insert("'" + Contact.GIRL_WEIGHT_ONE + "'", null, values);
+            db.close();
         }
     }
 
@@ -330,12 +411,12 @@ public class TraningService extends Service {
                 for (int i = 0; i < input_count; i++) {
                     sum += input_collection_girl[all][i] * first_w_girl_two[i][k];
                 }
-                hidden_girl[k] = 1 / (1 + exp(-sum));
+                hidden_girl_two[k] = 1 / (1 + exp(-sum));
             }
             for (int k = 0; k < out_count; k++) {
                 double out_sum = 0;
                 for (int i = 0; i < hidden_count; i++) {
-                    out_sum += hidden_girl[i] * second_w_gril_two[i][k];
+                    out_sum += hidden_girl_two[i] * second_w_gril_two[i][k];
                 }
                 out_girl_two[all][k] = 1 / (1 + exp(-out_sum));
             }
@@ -344,11 +425,11 @@ public class TraningService extends Service {
 
                 for (int i = 0; i < input_count; i++) {
                     for (int j = 0; j < hidden_count; j++) {
-                        first_w_girl_two[i][j] += (hidden_girl[j] * (1 - hidden_girl[j]) * differential * second_w_gril_two[j][k] * input_collection_girl[all][i]);
+                        first_w_girl_two[i][j] += (hidden_girl_two[j] * (1 - hidden_girl_two[j]) * differential * second_w_gril_two[j][k] * input_collection_girl[all][i]);
                     }
                 }
                 for (int i = 0; i < second_w_gril_two.length; i++) {
-                    second_w_gril_two[i][k] += (differential * hidden_girl[i]);
+                    second_w_gril_two[i][k] += (differential * hidden_girl_two[i]);
                 }
             }
 
@@ -358,7 +439,7 @@ public class TraningService extends Service {
     private class asyncTask_Gril_Two extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 100000; traning++) {
+            for (int traning = 0; traning < 300000; traning++) {
                 Traning_GrilTwo();
             }
             return null;
@@ -384,6 +465,21 @@ public class TraningService extends Service {
                 }
             }
             Log.e("완성 여자 마지막 글자", sumHangle);
+
+            SQLiteDatabase db = dbManager.getWritableDatabase();
+            JSONObject json = new JSONObject();
+            String jsonArray = null;
+            try {
+                json.put("first_w_girl_two", new JSONArray(first_w_girl_two));
+                json.put("second_w_gril_two", new JSONArray(second_w_gril_two));
+                jsonArray = json.toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            ContentValues values = new ContentValues();
+            values.put("json", jsonArray);
+            db.insert("'" + Contact.GIRL_WEIGHT_TWO + "'", null, values);
+            db.close();
         }
     }
 
