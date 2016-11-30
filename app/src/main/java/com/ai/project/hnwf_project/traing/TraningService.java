@@ -1,40 +1,26 @@
-package com.ai.project.hnwf_project.main;
+package com.ai.project.hnwf_project.traing;
 
-import android.content.ContentValues;
+import android.app.Service;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
-import com.ai.project.hnwf_project.R;
 import com.ai.project.hnwf_project.data.SaJoData;
-import com.ai.project.hnwf_project.db.DBManager;
-import com.ai.project.hnwf_project.traing.TraningService;
-import com.ai.project.hnwf_project.util.Contact;
 import com.ai.project.hnwf_project.util.GetHangle;
 import com.ai.project.hnwf_project.util.GetNearValue;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-
 import static java.lang.Math.exp;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private EditText name_input;
-    private Button succes_btn;
-
+/**
+ * Created by YunTaeSik on 2016-11-30.
+ */
+public class TraningService extends Service {
     private int input_count = 7;
     private int hidden_count = 7;
     private int out_count = 3;
+    private double n = 0.05;
 
     private double first_w_man_one[][] = new double[input_count][hidden_count];
     private double first_w_man_two[][] = new double[input_count][hidden_count];
@@ -66,82 +52,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private double target_girl_one[][] = SaJoData.man_target_one;
     private double target_girl_two[][] = SaJoData.man_target_two;
 
-    private ArrayList<ArrayList<Double>> first_wList_MANOne = new ArrayList();
-    private ArrayList<ArrayList<Double>> second_wList_MANOne = new ArrayList();
-
-    private DBManager dbManager;
-    private Cursor cursor_man;
-    private SQLiteDatabase db_man;
-    private String jsonArray_man;
-
-  /*  private double first_w_gril[][] = new double[input_count][hidden_count];
-    private double second_w_gril[][] = new double[hidden_count][out_count];
-    private double input_collection_gril[][] = {SaJoData.Input_1, SaJoData.Input_2, SaJoData.Input_3, SaJoData.Input_4};*/
-
-    private double n = 0.05;
-
-
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        name_input = (EditText) findViewById(R.id.name_input);
-        succes_btn = (Button) findViewById(R.id.succes_btn);
-
-        dbManager = new DBManager(getApplicationContext(), "WEIGHT", null, 1);
-        db_man = dbManager.getWritableDatabase();
-/*
-        db_man.execSQL("CREATE TABLE if not exists '" + Contact.MAN_WEIGHT_ONE + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
-        cursor_man = db_man.query("'" + Contact.MAN_WEIGHT_ONE + "'", null, null, null, null, null, null);
-        if (cursor_man.getCount() > 0) {
-            startService(new Intent(this, ManTrainingONEService.class));
-        } else {  //처음 DB가없을때*/
-        startService(new Intent(this, TraningService.class));
-    /*    Set_weight();
-        asyncTask_Man_One.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 남자 가운데 글자
-        asyncTask_Man_Two.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 남자  마지막 글자
-        asyncTask_Gril_One.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 여자 가운데 글자
-        asyncTask_Gril_Two.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 여자 마지막 글자*/
-        //  }
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Set_weight();
+        asyncTask_Man_One asyncTask_man_one = new asyncTask_Man_One();
+        asyncTask_man_one.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 남자 가운데 글자
+
+        asyncTask_Man_Two asyncTask_man_two = new asyncTask_Man_Two();
+        asyncTask_man_two.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 남자  마지막 글자
+
+        asyncTask_Gril_One asyncTask_gril_one = new asyncTask_Gril_One();
+        asyncTask_gril_one.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 여자 가운데 글자
+
+        asyncTask_Gril_Two asyncTask_gril_two = new asyncTask_Gril_Two();
+        asyncTask_gril_two.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 여자 마지막 글자
+        return super.onStartCommand(intent, flags, startId);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.succes_btn:
-                break;
-        }
-    }
-
-    /*
-        public static String hangulToJaso(String str) {
-            // 유니코드 한글 문자열을 입력 받음
-            int a, b, c; // 자소 버퍼: 초성/중성/종성 순
-            String result = "";
-
-            for (int i = 0; i < str.length(); i++) {
-                char ch = str.charAt(0);
-                if (ch >= 0xAC00 && ch <= 0xD7A3) { // "AC00:가" ~ "D7A3:힣" 에 속한 글자면 분해
-                    c = ch - 0xAC00;
-                    a = c / (21 * 28);
-                    c = c % (21 * 28);
-                    b = c / 28;
-                    c = c % 28;
-                    result = result + GetHangle.ChoSung_String[a] + GetHangle.JungSung_String[b];
-                    if (c != 0)
-                        result = result + GetHangle.JongSung_String[c]; // c가 0이 아니면, 즉 받침이 있으면
-                } else {
-                    result = result + ch;
-                }
-            }
-            return result;
-        }*/
-    private void Set_weight() {
+    private void Set_weight() { //초기 가중치
         for (int i = 0; i < input_count; i++) {
             for (int j = 0; j < hidden_count; j++) {
                 first_w_man_one[i][j] = Math.random();
@@ -173,12 +107,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         for (int i = 0; i < hidden_count; i++) {
             for (int j = 0; j < out_count; j++) {
-                first_w_girl_two[i][j] = Math.random();
+                second_w_gril_one[i][j] = Math.random();
             }
         }
         for (int i = 0; i < input_count; i++) {
             for (int j = 0; j < hidden_count; j++) {
-                second_w_gril_one[i][j] = Math.random();
+                first_w_girl_two[i][j] = Math.random();
             }
 
         }
@@ -221,28 +155,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void Get_weight_ManOne() {
-        for (int i = 0; i < input_count; i++) {
-            ArrayList<Double> doubles = new ArrayList<>();
-            for (int j = 0; j < hidden_count; j++) {
-                doubles.add(first_w_man_one[i][j]);
-            }
-            first_wList_MANOne.add(doubles);
-        }
-        for (int i = 0; i < hidden_count; i++) {
-            ArrayList<Double> doubles = new ArrayList<>();
-            for (int j = 0; j < out_count; j++) {
-                doubles.add(second_w_man_one[i][j]);
-            }
-            second_wList_MANOne.add(doubles);
-        }
-    }
 
-    private AsyncTask asyncTask_Man_One = new AsyncTask() {
+    private class asyncTask_Man_One extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 50000; traning++) {
-                Log.e("traing", String.valueOf(traning));
+            for (int traning = 0; traning < 100000; traning++) {
                 Traning_ManOne();
             }
             return null;
@@ -251,18 +168,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
-            Get_weight_ManOne();
-            JSONObject json = new JSONObject();
-            try {
-                json.put("first_wList", new JSONArray(first_wList_MANOne));
-                json.put("second_wList", new JSONArray(second_wList_MANOne));
-                jsonArray_man = json.toString();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            ContentValues values = new ContentValues();
-            values.put("json", jsonArray_man);
-            db_man.insert("'" + Contact.MAN_WEIGHT_ONE + "'", null, values);
             String sumHangle = "";
             for (int i = 0; i < out_man_one.length; i++) {
                 for (int j = 0; j < out_man_one[i].length; j++) {
@@ -282,7 +187,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             Log.e("완성 남자 가운데 글자", sumHangle);
         }
-    };
+    }
+
+    ;
 
     private void Traning_ManTwo() {
         for (int all = 0; all < input_collection_man.length; all++) {
@@ -316,11 +223,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private AsyncTask asyncTask_Man_Two = new AsyncTask() {
+    private class asyncTask_Man_Two extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 50000; traning++) {
-                Log.e("traing", String.valueOf(traning));
+            for (int traning = 0; traning < 100000; traning++) {
                 Traning_ManTwo();
             }
             return null;
@@ -347,7 +253,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             Log.e("완성 남성 마지막 글자", sumHangle);
         }
-    };
+    }
+
+    ;
 
     private void Traning_GrilOne() {
         for (int all = 0; all < input_collection_girl.length; all++) {
@@ -381,11 +289,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private AsyncTask asyncTask_Gril_One = new AsyncTask() {
+    private class asyncTask_Gril_One extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 50000; traning++) {
-                Log.e("traing", String.valueOf(traning));
+            for (int traning = 0; traning < 100000; traning++) {
                 Traning_GrilOne();
             }
             return null;
@@ -412,7 +319,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             Log.e("완성 여자 가운데 글자", sumHangle);
         }
-    };
+    }
+
+    ;
 
     private void Traning_GrilTwo() {
         for (int all = 0; all < input_collection_girl.length; all++) {
@@ -446,11 +355,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private AsyncTask asyncTask_Gril_Two = new AsyncTask() {
+    private class asyncTask_Gril_Two extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 50000; traning++) {
-                Log.e("traing", String.valueOf(traning));
+            for (int traning = 0; traning < 100000; traning++) {
                 Traning_GrilTwo();
             }
             return null;
@@ -475,8 +383,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
             }
-            Log.e("완성 여자 가운데 글자", sumHangle);
+            Log.e("완성 여자 마지막 글자", sumHangle);
         }
-    };
+    }
 
+    ;
 }
