@@ -21,7 +21,6 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog"></activity>
 
-        <service android:name=".traing.ManTrainingONEService" />
         <service android:name=".traing.TraningService" />
     </application>
 

@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -75,6 +77,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
     private String SEX = "남";
 
     private DBManager dbManager;
+    private Animation animation;
 
     public InformationFragment() {
         // Required empty public constructor
@@ -119,6 +122,9 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         boy_btn.setOnClickListener(this);
         girl_btn.setOnClickListener(this);
         boy_btn.setChecked(true);
+
+        animation = AnimationUtils.loadAnimation(getContext(), R.anim.result_animation);
+        result_text.startAnimation(animation);
         return view;
     }
 

@@ -235,7 +235,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/white"
                         android:inputType="text"
-                        android:maxLength="1" />
+                        android:maxLength="2" />
                 </LinearLayout>
             </LinearLayout>
 
