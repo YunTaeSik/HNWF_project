@@ -9,4 +9,8 @@ public class Contact {
     public static String MAN_WEIGHT_TWO = "MAN_WEIGHT_TWO";
     public static String GIRL_WEIGHT_ONE = "GIRL_WEIGHT_ONE";
     public static String GIRL_WEIGHT_TWO = "GIRL_WEIGHT_TWO";
+
+    public static String WEIGHT_TRAING = "WEIGHT_TRAING";
+    public static String SET_NAMING = "SET_NAMING";
+
 }

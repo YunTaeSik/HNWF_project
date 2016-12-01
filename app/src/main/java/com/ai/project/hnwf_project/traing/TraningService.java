@@ -65,6 +65,7 @@ public class TraningService extends Service {
     private double target_girl_two[][] = SaJoData.man_target_two;
 
     private DBManager dbManager;
+    private int dbcount = 0;
 
     @Nullable
     @Override
@@ -83,6 +84,8 @@ public class TraningService extends Service {
         if (cursor_man_one.getCount() < 1) {
             asyncTask_Man_One asyncTask_man_one = new asyncTask_Man_One();
             asyncTask_man_one.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 남자 가운데 글자
+        } else {
+            dbcount = 4;
         }
         cursor_man_one.close();
 
@@ -90,6 +93,8 @@ public class TraningService extends Service {
         if (cursor_man_two.getCount() < 1) {
             asyncTask_Man_Two asyncTask_man_two = new asyncTask_Man_Two();
             asyncTask_man_two.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 남자  마지막 글자
+        } else {
+            dbcount = 4;
         }
         cursor_man_two.close();
 
@@ -97,6 +102,8 @@ public class TraningService extends Service {
         if (cursor_girl_one.getCount() < 1) {
             asyncTask_Gril_One asyncTask_gril_one = new asyncTask_Gril_One();
             asyncTask_gril_one.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 여자 가운데 글자
+        } else {
+            dbcount = 4;
         }
         cursor_girl_one.close();
 
@@ -104,8 +111,13 @@ public class TraningService extends Service {
         if (cursor_girl_two.getCount() < 1) {
             asyncTask_Gril_Two asyncTask_gril_two = new asyncTask_Gril_Two();
             asyncTask_gril_two.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); // 여자 마지막 글자
+        } else {
+            dbcount = 4;
         }
         cursor_girl_two.close();
+        if (dbcount >= 4) {
+            sendBroadcast(new Intent(Contact.WEIGHT_TRAING));
+        }
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -237,6 +249,11 @@ public class TraningService extends Service {
             values.put("json", jsonArray);
             db.insert("'" + Contact.MAN_WEIGHT_ONE + "'", null, values);
             db.close();
+
+            dbcount++;
+            if (dbcount >= 4) {
+                sendBroadcast(new Intent(Contact.WEIGHT_TRAING));
+            }
         }
     }
 
@@ -318,6 +335,11 @@ public class TraningService extends Service {
             values.put("json", jsonArray);
             db.insert("'" + Contact.MAN_WEIGHT_TWO + "'", null, values);
             db.close();
+
+            dbcount++;
+            if (dbcount >= 4) {
+                sendBroadcast(new Intent(Contact.WEIGHT_TRAING));
+            }
         }
     }
 
@@ -367,24 +389,6 @@ public class TraningService extends Service {
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
-            String sumHangle = "";
-            for (int i = 0; i < out_girl_one.length; i++) {
-                for (int j = 0; j < out_girl_one[i].length; j++) {
-                    Log.e("test", String.valueOf(out_girl_one[i][j]));
-                    if (j == 0 || j == 3) {
-                        Log.e("초성", String.valueOf(GetNearValue.getNearCHO(out_girl_one[i][j])));
-                        sumHangle += GetHangle.Girl_ChoSung_String[(int) GetNearValue.getNearCHO(out_girl_one[i][j])];
-                    } else if (j == 1 || j == 4) {
-                        Log.e("중성", String.valueOf(GetNearValue.getNearJUNG(out_girl_one[i][j])));
-                        sumHangle += GetHangle.Girl_JungSung_String[(int) GetNearValue.getNearJUNG(out_girl_one[i][j])];
-                    } else if (j == 2 || j == 5) {
-                        Log.e("종성", String.valueOf(GetNearValue.getNearJONG(out_girl_one[i][j])));
-                        sumHangle += GetHangle.Girl_JongSung_String[(int) GetNearValue.getNearJONG(out_girl_one[i][j])];
-                    }
-                }
-            }
-            Log.e("완성 여자 가운데 글자", sumHangle);
-
             SQLiteDatabase db = dbManager.getWritableDatabase();
             JSONObject json = new JSONObject();
             String jsonArray = null;
@@ -399,6 +403,10 @@ public class TraningService extends Service {
             values.put("json", jsonArray);
             db.insert("'" + Contact.GIRL_WEIGHT_ONE + "'", null, values);
             db.close();
+            dbcount++;
+            if (dbcount >= 4) {
+                sendBroadcast(new Intent(Contact.WEIGHT_TRAING));
+            }
         }
     }
 
@@ -448,24 +456,6 @@ public class TraningService extends Service {
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
-            String sumHangle = "";
-            for (int i = 0; i < out_girl_two.length; i++) {
-                for (int j = 0; j < out_girl_two[i].length; j++) {
-                    Log.e("test", String.valueOf(out_girl_two[i][j]));
-                    if (j == 0 || j == 3) {
-                        Log.e("초성", String.valueOf(GetNearValue.getNearCHO(out_girl_two[i][j])));
-                        sumHangle += GetHangle.Girl_ChoSung_String[(int) GetNearValue.getNearCHO(out_girl_two[i][j])];
-                    } else if (j == 1 || j == 4) {
-                        Log.e("중성", String.valueOf(GetNearValue.getNearJUNG(out_girl_two[i][j])));
-                        sumHangle += GetHangle.Girl_JungSung_String[(int) GetNearValue.getNearJUNG(out_girl_two[i][j])];
-                    } else if (j == 2 || j == 5) {
-                        Log.e("종성", String.valueOf(GetNearValue.getNearJONG(out_girl_two[i][j])));
-                        sumHangle += GetHangle.Girl_JongSung_String[(int) GetNearValue.getNearJONG(out_girl_two[i][j])];
-                    }
-                }
-            }
-            Log.e("완성 여자 마지막 글자", sumHangle);
-
             SQLiteDatabase db = dbManager.getWritableDatabase();
             JSONObject json = new JSONObject();
             String jsonArray = null;
@@ -480,6 +470,10 @@ public class TraningService extends Service {
             values.put("json", jsonArray);
             db.insert("'" + Contact.GIRL_WEIGHT_TWO + "'", null, values);
             db.close();
+            dbcount++;
+            if (dbcount >= 4) {
+                sendBroadcast(new Intent(Contact.WEIGHT_TRAING));
+            }
         }
     }
 

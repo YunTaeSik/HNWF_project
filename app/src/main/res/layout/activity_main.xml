@@ -6,14 +6,47 @@
     android:orientation="vertical"
     tools:context=".main.MainActivity">
 
-    <EditText
-        android:id="@+id/name_input"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <!--<TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/theme"
+        android:gravity="center"
+        android:text="정보 입력"
+        android:textColor="@color/white"
+        android:textSize="18sp" />-->
 
-    <Button
-        android:id="@+id/succes_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="확인" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#81d3e8">
+
+        <RelativeLayout
+            android:id="@+id/circle_layout"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/circle_ring_background"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/main_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/circle_layout"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="인공지능 작명"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/main_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></FrameLayout>
 </LinearLayout>
