@@ -138,16 +138,19 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                         for (int i = 0; i < GetHangle.Man_ChoSung_String.length; i++) {
                             if (GetHangle.Man_ChoSung_String[i].equals(cho)) {
                                 cho_index = (double) i;
+                                Log.e("test", String.valueOf(cho_index));
                             }
                         }
                         for (int i = 0; i < GetHangle.Man_JungSung_String.length; i++) {
                             if (GetHangle.Man_JungSung_String[i].equals(jung)) {
                                 jung_index = (double) i;
+                                Log.e("test", String.valueOf(jung_index));
                             }
                         }
                         for (int i = 0; i < GetHangle.Man_JongSung_String.length; i++) {
                             if (GetHangle.Man_JongSung_String[i].equals(jong)) {
                                 jong_index = (double) i;
+                                Log.e("test", String.valueOf(jong_index));
                             }
                         }
                         double year = Double.parseDouble(year_edit.getText().toString()) - 2016.0;
@@ -156,6 +159,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                         double time = Double.parseDouble(time_edit.getText().toString());
 
                         double input[] = {cho_index / 11.0, jung_index / 13.0, jong_index / 4.0, year / 100.0, month / 12.0, date / 31.0, time / 24.0};
+                        //double input[] = {2.0 / 11.0, 9.0 / 13.0, 0.0 / 4.0, 0.0 / 100.0, 11.0 / 12.0, 27.0 / 31.0, 3.0 / 24.0};
                         SetNameing_Man(input);
                     } else if (SEX.equals("여")) {
                         for (int i = 0; i < GetHangle.Girl_ChoSung_String.length; i++) {
@@ -355,14 +359,24 @@ public class InformationFragment extends Fragment implements View.OnClickListene
             out_man_two[k] = 1 / (1 + exp(-out_sum)); //남자 마지막 이름
         }
         String cho_one = GetHangle.Man_ChoSung_String[(int) GetNearValue.getNearCHO(out_man_one[0])];
-        String jung_one = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearCHO(out_man_one[1])];
-        String jong_one = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearCHO(out_man_one[2])];
+        String jung_one = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearJUNG(out_man_one[1])];
+        String jong_one = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearJONG(out_man_one[2])];
 
         String cho_two = GetHangle.Man_ChoSung_String[(int) GetNearValue.getNearCHO(out_man_two[0])];
-        String jung_two = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearCHO(out_man_two[1])];
-        String jong_two = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearCHO(out_man_two[2])];
+        String jung_two = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearJUNG(out_man_two[1])];
+        String jong_two = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearJONG(out_man_two[2])];
 
-        Log.e("가운데", cho_one + jung_one + jong_one);
+        char[] a = (cho_one + jung_one + jong_one).toCharArray();
+        // char[] a = cho_one.toCharArray();
+        char[] b = jung_one.toCharArray();
+        char[] c = jong_one.toCharArray();
+        String han = String.copyValueOf(a);
+
+
+        // String han = Character.toString(a[0]) + Character.toString(b[0]) + Character.toString(c[0]);
+        //char characterValue = (char) ((((a[0] * 21) + b[0]) * 28) + c[0] + 0xAC00);
+        char characterValue = (char) (0xAC00 + (a[0] * 21 * 28) + (b[0] * 28) + c[0]);
+        Log.e("가운데", han);
         Log.e("마지막", cho_two + jung_two + jong_two);
 
     }
@@ -398,11 +412,11 @@ public class InformationFragment extends Fragment implements View.OnClickListene
             out_girl_two[k] = 1 / (1 + exp(-out_sum)); //남자 마지막 이름
         }
         String cho_one = GetHangle.Man_ChoSung_String[(int) GetNearValue.getNearCHO(out_girl_one[0])];
-        String jung_one = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearCHO(out_girl_one[1])];
-        String jong_one = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearCHO(out_girl_one[2])];
+        String jung_one = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearJUNG(out_girl_one[1])];
+        String jong_one = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearJONG(out_girl_one[2])];
 
         String cho_two = GetHangle.Man_ChoSung_String[(int) GetNearValue.getNearCHO(out_girl_two[0])];
-        String jung_two = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearCHO(out_girl_two[1])];
-        String jong_two = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearCHO(out_girl_two[2])];
+        String jung_two = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearJUNG(out_girl_two[1])];
+        String jong_two = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearJONG(out_girl_two[2])];
     }
 }
