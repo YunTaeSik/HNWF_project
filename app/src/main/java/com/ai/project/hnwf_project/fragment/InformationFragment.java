@@ -365,20 +365,52 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         String cho_two = GetHangle.Man_ChoSung_String[(int) GetNearValue.getNearCHO(out_man_two[0])];
         String jung_two = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearJUNG(out_man_two[1])];
         String jong_two = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearJONG(out_man_two[2])];
-
-        char[] a = (cho_one + jung_one + jong_one).toCharArray();
-        // char[] a = cho_one.toCharArray();
+        //한글 합치기 가운데 글자 시작//
+        char[] a = cho_one.toCharArray();
         char[] b = jung_one.toCharArray();
         char[] c = jong_one.toCharArray();
-        String han = String.copyValueOf(a);
-
-
-        // String han = Character.toString(a[0]) + Character.toString(b[0]) + Character.toString(c[0]);
-        //char characterValue = (char) ((((a[0] * 21) + b[0]) * 28) + c[0] + 0xAC00);
-        char characterValue = (char) (0xAC00 + (a[0] * 21 * 28) + (b[0] * 28) + c[0]);
-        Log.e("가운데", han);
-        Log.e("마지막", cho_two + jung_two + jong_two);
-
+        int cho_index = 0, jung_index = 0, jong_index = 0;
+        for (int i = 0; i < GetHangle.ChoSung.length; i++) {
+            if (a[0] == GetHangle.ChoSung[i]) {
+                cho_index = i;
+            }
+        }
+        for (int i = 0; i < GetHangle.JungSung.length; i++) {
+            if (b[0] == GetHangle.JungSung[i]) {
+                jung_index = i;
+            }
+        }
+        for (int i = 0; i < GetHangle.JongSung.length; i++) {
+            if (c[0] == GetHangle.JongSung[i]) {
+                jong_index = i;
+            }
+        }
+        //한글 합치기 가운데 글자 끝//
+        //한글 합치기 마지막 글자 시작//
+        char[] a2 = cho_two.toCharArray();
+        char[] b2 = jung_two.toCharArray();
+        char[] c2 = jong_two.toCharArray();
+        int cho_index2 = 0, jung_index2 = 0, jong_index2 = 0;
+        for (int i = 0; i < GetHangle.ChoSung.length; i++) {
+            if (a2[0] == GetHangle.ChoSung[i]) {
+                cho_index2 = i;
+            }
+        }
+        for (int i = 0; i < GetHangle.JungSung.length; i++) {
+            if (b2[0] == GetHangle.JungSung[i]) {
+                jung_index2 = i;
+            }
+        }
+        for (int i = 0; i < GetHangle.JongSung.length; i++) {
+            if (c2[0] == GetHangle.JongSung[i]) {
+                jong_index2 = i;
+            }
+        }
+        //한글 합치기 마지막 글자 끝//
+        char characterValue_one = (char) (0xAC00 + (cho_index * 21 * 28) + (jung_index * 28) + jong_index);
+        char characterValue_two = (char) (0xAC00 + (cho_index2 * 21 * 28) + (jung_index2 * 28) + jong_index2);
+        String naming = name_edit.getText().toString() + characterValue_one + characterValue_two;
+        result_text.setText(naming);
     }
 
     private void SetNameing_Girl(double input[]) {
@@ -411,12 +443,59 @@ public class InformationFragment extends Fragment implements View.OnClickListene
             }
             out_girl_two[k] = 1 / (1 + exp(-out_sum)); //남자 마지막 이름
         }
-        String cho_one = GetHangle.Man_ChoSung_String[(int) GetNearValue.getNearCHO(out_girl_one[0])];
-        String jung_one = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearJUNG(out_girl_one[1])];
-        String jong_one = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearJONG(out_girl_one[2])];
+        String cho_one = GetHangle.Girl_ChoSung_String[(int) GetNearValue.getNearCHO(out_girl_one[0])];
+        String jung_one = GetHangle.Girl_JungSung_String[(int) GetNearValue.getNearJUNG(out_girl_one[1])];
+        String jong_one = GetHangle.Girl_JongSung_String[(int) GetNearValue.getNearJONG(out_girl_one[2])];
 
-        String cho_two = GetHangle.Man_ChoSung_String[(int) GetNearValue.getNearCHO(out_girl_two[0])];
-        String jung_two = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearJUNG(out_girl_two[1])];
-        String jong_two = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearJONG(out_girl_two[2])];
+        String cho_two = GetHangle.Girl_ChoSung_String[(int) GetNearValue.getNearCHO(out_girl_two[0])];
+        String jung_two = GetHangle.Girl_JungSung_String[(int) GetNearValue.getNearJUNG(out_girl_two[1])];
+        String jong_two = GetHangle.Girl_JongSung_String[(int) GetNearValue.getNearJONG(out_girl_two[2])];
+
+        //한글 합치기 가운데 글자 시작//
+        char[] a = cho_one.toCharArray();
+        char[] b = jung_one.toCharArray();
+        char[] c = jong_one.toCharArray();
+        int cho_index = 0, jung_index = 0, jong_index = 0;
+        for (int i = 0; i < GetHangle.ChoSung.length; i++) {
+            if (a[0] == GetHangle.ChoSung[i]) {
+                cho_index = i;
+            }
+        }
+        for (int i = 0; i < GetHangle.JungSung.length; i++) {
+            if (b[0] == GetHangle.JungSung[i]) {
+                jung_index = i;
+            }
+        }
+        for (int i = 0; i < GetHangle.JongSung.length; i++) {
+            if (c[0] == GetHangle.JongSung[i]) {
+                jong_index = i;
+            }
+        }
+        //한글 합치기 가운데 글자 끝//
+        //한글 합치기 마지막 글자 시작//
+        char[] a2 = cho_two.toCharArray();
+        char[] b2 = jung_two.toCharArray();
+        char[] c2 = jong_two.toCharArray();
+        int cho_index2 = 0, jung_index2 = 0, jong_index2 = 0;
+        for (int i = 0; i < GetHangle.ChoSung.length; i++) {
+            if (a2[0] == GetHangle.ChoSung[i]) {
+                cho_index2 = i;
+            }
+        }
+        for (int i = 0; i < GetHangle.JungSung.length; i++) {
+            if (b2[0] == GetHangle.JungSung[i]) {
+                jung_index2 = i;
+            }
+        }
+        for (int i = 0; i < GetHangle.JongSung.length; i++) {
+            if (c2[0] == GetHangle.JongSung[i]) {
+                jong_index2 = i;
+            }
+        }
+        //한글 합치기 마지막 글자 끝//
+        char characterValue_one = (char) (0xAC00 + (cho_index * 21 * 28) + (jung_index * 28) + jong_index);
+        char characterValue_two = (char) (0xAC00 + (cho_index2 * 21 * 28) + (jung_index2 * 28) + jong_index2);
+        String naming = name_edit.getText().toString() + characterValue_one + characterValue_two;
+        result_text.setText(naming);
     }
 }
