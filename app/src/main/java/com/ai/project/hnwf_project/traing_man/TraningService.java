@@ -1,4 +1,4 @@
-package com.ai.project.hnwf_project.traing;
+package com.ai.project.hnwf_project.traing_man;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -33,11 +33,11 @@ import static java.lang.Math.exp;
  * Created by YunTaeSik on 2016-11-30.
  */
 public class TraningService extends Service {
-    private int input_count = 7;
-    private int hidden_count = 8;
+    private int input_count = 8;
+    private int hidden_count = 25;
     private int out_count = 3;
     // private double n = 0.0005;
-    private double n = 0.005;
+    private double n = 0.05;
 
     private double first_w_man_one[][] = new double[input_count][hidden_count];
     private double first_w_man_two[][] = new double[input_count][hidden_count];
@@ -50,16 +50,39 @@ public class TraningService extends Service {
 
     private double second_w_gril_one[][] = new double[hidden_count][out_count];
     private double second_w_gril_two[][] = new double[hidden_count][out_count];
-    /*   private double input_collection_man[][] = {
-               SaJoData.man_Input_1, SaJoData.man_Input_2, SaJoData.man_Input_3, SaJoData.man_Input_4, SaJoData.man_Input_5, SaJoData.man_Input_6, SaJoData.man_Input_7, SaJoData.man_Input_8
-
-       };
-       private double input_collection_girl[][] = {
-               SaJoData.girl_Input_1, SaJoData.girl_Input_2, SaJoData.girl_Input_3, SaJoData.girl_Input_4, SaJoData.girl_Input_5, SaJoData.girl_Input_6, SaJoData.girl_Input_7, SaJoData.girl_Input_8
-
-       };*/
-    //남자 인풋
     private double input_collection_man[][] = {
+            SaJoData.man_Input_1, SaJoData.man_Input_2, SaJoData.man_Input_3, SaJoData.man_Input_4, SaJoData.man_Input_5, SaJoData.man_Input_6, SaJoData.man_Input_7, SaJoData.man_Input_8,
+            SaJoData.man_Input_9, SaJoData.man_Input_10, SaJoData.man_Input_11, SaJoData.man_Input_12, SaJoData.man_Input_13, SaJoData.man_Input_14, SaJoData.man_Input_15, SaJoData.man_Input_16,
+            SaJoData.man_Input_17, SaJoData.man_Input_18, SaJoData.man_Input_19, SaJoData.man_Input_20, SaJoData.man_Input_21, SaJoData.man_Input_22, SaJoData.man_Input_23, SaJoData.man_Input_24,
+            SaJoData.man_Input_25, SaJoData.man_Input_26, SaJoData.man_Input_27, SaJoData.man_Input_28, SaJoData.man_Input_29, SaJoData.man_Input_30, SaJoData.man_Input_31, SaJoData.man_Input_32,
+            SaJoData.man_Input_33, SaJoData.man_Input_34, SaJoData.man_Input_35, SaJoData.man_Input_36, SaJoData.man_Input_37, SaJoData.man_Input_38, SaJoData.man_Input_39, SaJoData.man_Input_40,
+            SaJoData.man_Input_41, SaJoData.man_Input_42, SaJoData.man_Input_43, SaJoData.man_Input_44, SaJoData.man_Input_45, SaJoData.man_Input_46, SaJoData.man_Input_47, SaJoData.man_Input_48,
+            SaJoData.man_Input_49, SaJoData.man_Input_50, SaJoData.man_Input_51, SaJoData.man_Input_52, SaJoData.man_Input_53, SaJoData.man_Input_54, SaJoData.man_Input_56, SaJoData.man_Input_57,
+            SaJoData.man_Input_58, SaJoData.man_Input_59, SaJoData.man_Input_60, SaJoData.man_Input_61, SaJoData.man_Input_62, SaJoData.man_Input_63, SaJoData.man_Input_64, SaJoData.man_Input_65,
+            SaJoData.man_Input_67, SaJoData.man_Input_68, SaJoData.man_Input_69, SaJoData.man_Input_70, SaJoData.man_Input_71, SaJoData.man_Input_72, SaJoData.man_Input_73, SaJoData.man_Input_74,
+            SaJoData.man_Input_75, SaJoData.man_Input_76, SaJoData.man_Input_77, SaJoData.man_Input_78, SaJoData.man_Input_79, SaJoData.man_Input_80, SaJoData.man_Input_81, SaJoData.man_Input_82,
+            SaJoData.man_Input_83, SaJoData.man_Input_84, SaJoData.man_Input_85, SaJoData.man_Input_86, SaJoData.man_Input_87, SaJoData.man_Input_88, SaJoData.man_Input_89, SaJoData.man_Input_90,
+            SaJoData.man_Input_91, SaJoData.man_Input_92, SaJoData.man_Input_93, SaJoData.man_Input_94, SaJoData.man_Input_95, SaJoData.man_Input_96, SaJoData.man_Input_97, SaJoData.man_Input_98,
+            SaJoData.man_Input_99, SaJoData.man_Input_100
+
+    };
+    private double input_collection_girl[][] = {
+            SaJoData.girl_Input_1, SaJoData.girl_Input_2, SaJoData.girl_Input_3, SaJoData.girl_Input_4, SaJoData.girl_Input_5, SaJoData.girl_Input_6, SaJoData.girl_Input_7, SaJoData.girl_Input_8,
+            SaJoData.girl_Input_9, SaJoData.girl_Input_10, SaJoData.girl_Input_11, SaJoData.girl_Input_12, SaJoData.girl_Input_13, SaJoData.girl_Input_14, SaJoData.girl_Input_15, SaJoData.girl_Input_16,
+            SaJoData.girl_Input_17, SaJoData.girl_Input_18, SaJoData.girl_Input_19, SaJoData.girl_Input_20, SaJoData.girl_Input_21, SaJoData.girl_Input_22, SaJoData.girl_Input_23, SaJoData.girl_Input_24,
+            SaJoData.girl_Input_25, SaJoData.girl_Input_26, SaJoData.girl_Input_27, SaJoData.girl_Input_28, SaJoData.girl_Input_29, SaJoData.girl_Input_30, SaJoData.girl_Input_31, SaJoData.girl_Input_32,
+            SaJoData.girl_Input_33, SaJoData.girl_Input_34, SaJoData.girl_Input_35, SaJoData.girl_Input_36, SaJoData.girl_Input_37, SaJoData.girl_Input_38, SaJoData.girl_Input_39, SaJoData.girl_Input_40,
+            SaJoData.girl_Input_41, SaJoData.girl_Input_42, SaJoData.girl_Input_43, SaJoData.girl_Input_44, SaJoData.girl_Input_45, SaJoData.girl_Input_46, SaJoData.girl_Input_47, SaJoData.girl_Input_48,
+            SaJoData.girl_Input_49, SaJoData.girl_Input_50, SaJoData.girl_Input_51, SaJoData.girl_Input_52, SaJoData.girl_Input_53, SaJoData.girl_Input_54, SaJoData.girl_Input_55, SaJoData.girl_Input_56,
+            SaJoData.girl_Input_57, SaJoData.girl_Input_58, SaJoData.girl_Input_59, SaJoData.girl_Input_60, SaJoData.girl_Input_61, SaJoData.girl_Input_62, SaJoData.girl_Input_63, SaJoData.girl_Input_64,
+            SaJoData.girl_Input_65, SaJoData.girl_Input_66, SaJoData.girl_Input_67, SaJoData.girl_Input_68, SaJoData.girl_Input_69, SaJoData.girl_Input_70, SaJoData.girl_Input_71, SaJoData.girl_Input_72,
+            SaJoData.girl_Input_73, SaJoData.girl_Input_74, SaJoData.girl_Input_75, SaJoData.girl_Input_76, SaJoData.girl_Input_77, SaJoData.girl_Input_78, SaJoData.girl_Input_79, SaJoData.girl_Input_80,
+            SaJoData.girl_Input_81, SaJoData.girl_Input_82, SaJoData.girl_Input_83, SaJoData.girl_Input_84, SaJoData.girl_Input_85, SaJoData.girl_Input_86, SaJoData.girl_Input_87, SaJoData.girl_Input_88,
+            SaJoData.girl_Input_89, SaJoData.girl_Input_90, SaJoData.girl_Input_91, SaJoData.girl_Input_92, SaJoData.girl_Input_93, SaJoData.girl_Input_94, SaJoData.girl_Input_95, SaJoData.girl_Input_96,
+            SaJoData.girl_Input_97, SaJoData.girl_Input_98, SaJoData.girl_Input_99, SaJoData.girl_Input_100
+    };
+    //남자 인풋
+   /* private double input_collection_man[][] = {
             SaJoData.man_Input_1, SaJoData.man_Input_2, SaJoData.man_Input_3, SaJoData.man_Input_4, SaJoData.man_Input_5, SaJoData.man_Input_6, SaJoData.man_Input_7, SaJoData.man_Input_8,
             SaJoData.man_Input_9, SaJoData.man_Input_10, SaJoData.man_Input_11, SaJoData.man_Input_12, SaJoData.man_Input_13, SaJoData.man_Input_14, SaJoData.man_Input_15, SaJoData.man_Input_16,
             SaJoData.man_Input_17, SaJoData.man_Input_18, SaJoData.man_Input_19, SaJoData.man_Input_20, SaJoData.man_Input_21, SaJoData.man_Input_22, SaJoData.man_Input_23, SaJoData.man_Input_24,
@@ -103,7 +126,7 @@ public class TraningService extends Service {
             SaJoData.girl_Input_137, SaJoData.girl_Input_138, SaJoData.girl_Input_139, SaJoData.girl_Input_140, SaJoData.girl_Input_141, SaJoData.girl_Input_142, SaJoData.girl_Input_143, SaJoData.girl_Input_144,
             SaJoData.girl_Input_145, SaJoData.girl_Input_146, SaJoData.girl_Input_147, SaJoData.girl_Input_148, SaJoData.girl_Input_149, SaJoData.girl_Input_150, SaJoData.girl_Input_151, SaJoData.girl_Input_152,
             SaJoData.girl_Input_153, SaJoData.girl_Input_154, SaJoData.girl_Input_155, SaJoData.girl_Input_156, SaJoData.girl_Input_157, SaJoData.girl_Input_158, SaJoData.girl_Input_159, SaJoData.girl_Input_160,
-            SaJoData.girl_Input_161, SaJoData.girl_Input_162, SaJoData.girl_Input_163, SaJoData.girl_Input_164, SaJoData.girl_Input_165, SaJoData.girl_Input_166};
+            SaJoData.girl_Input_161, SaJoData.girl_Input_162, SaJoData.girl_Input_163, SaJoData.girl_Input_164, SaJoData.girl_Input_165, SaJoData.girl_Input_166};*/
 
     private double hidden_man_one[] = new double[hidden_count];
     private double hidden_man_two[] = new double[hidden_count];
@@ -233,13 +256,14 @@ public class TraningService extends Service {
 
     private void Traning_ManOne() {
         for (int all = 0; all < input_collection_man.length; all++) {
-            for (int k = 0; k < hidden_count; k++) {
+            for (int k = 0; k < hidden_count - 1; k++) {
                 double sum = 0;
                 for (int i = 0; i < input_count; i++) {
                     sum += input_collection_man[all][i] * first_w_man_one[i][k];
                 }
                 hidden_man_one[k] = 1 / (1 + exp(-sum));
             }
+            hidden_man_one[hidden_count - 1] = -1;
             for (int k = 0; k < out_count; k++) {
                 double out_sum = 0;
                 for (int i = 0; i < hidden_count; i++) {
@@ -273,7 +297,7 @@ public class TraningService extends Service {
 
         @Override
         protected Integer doInBackground(Integer... integers) {
-            for (int traning = 0; traning < 30000; traning++) {
+            for (int traning = 0; traning < 500000; traning++) {
                 Log.e("traing", String.valueOf(traning));
                 Traning_ManOne();
             }
@@ -330,13 +354,16 @@ public class TraningService extends Service {
 
     private void Traning_ManTwo() {
         for (int all = 0; all < input_collection_man.length; all++) {
-            for (int k = 0; k < hidden_count; k++) {
+            for (int k = 0; k < hidden_count - 1; k++) {
                 double sum = 0;
                 for (int i = 0; i < input_count; i++) {
                     sum += input_collection_man[all][i] * first_w_man_two[i][k];
                 }
                 hidden_man_two[k] = 1 / (1 + exp(-sum));
             }
+
+            hidden_man_two[hidden_count - 1] = -1;
+
             for (int k = 0; k < out_count; k++) {
                 double out_sum = 0;
                 for (int i = 0; i < hidden_count; i++) {
@@ -363,7 +390,7 @@ public class TraningService extends Service {
     private class asyncTask_Man_Two extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 30000; traning++) {
+            for (int traning = 0; traning < 500000; traning++) {
                 Traning_ManTwo();
             }
             return null;
@@ -417,13 +444,14 @@ public class TraningService extends Service {
 
     private void Traning_GrilOne() {
         for (int all = 0; all < input_collection_girl.length; all++) {
-            for (int k = 0; k < hidden_count; k++) {
+            for (int k = 0; k < hidden_count - 1; k++) {
                 double sum = 0;
                 for (int i = 0; i < input_count; i++) {
                     sum += input_collection_girl[all][i] * first_w_girl_one[i][k];
                 }
                 hidden_girl_one[k] = 1 / (1 + exp(-sum));
             }
+            hidden_girl_one[hidden_count - 1] = -1;
             for (int k = 0; k < out_count; k++) {
                 double out_sum = 0;
                 for (int i = 0; i < hidden_count; i++) {
@@ -450,7 +478,7 @@ public class TraningService extends Service {
     private class asyncTask_Gril_One extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 30000; traning++) {
+            for (int traning = 0; traning < 500000; traning++) {
                 Traning_GrilOne();
             }
             return null;
@@ -485,13 +513,14 @@ public class TraningService extends Service {
 
     private void Traning_GrilTwo() {
         for (int all = 0; all < input_collection_girl.length; all++) {
-            for (int k = 0; k < hidden_count; k++) {
+            for (int k = 0; k < hidden_count - 1; k++) {
                 double sum = 0;
                 for (int i = 0; i < input_count; i++) {
                     sum += input_collection_girl[all][i] * first_w_girl_two[i][k];
                 }
                 hidden_girl_two[k] = 1 / (1 + exp(-sum));
             }
+            hidden_girl_two[hidden_count - 1] = -1;
             for (int k = 0; k < out_count; k++) {
                 double out_sum = 0;
                 for (int i = 0; i < hidden_count; i++) {
@@ -518,7 +547,7 @@ public class TraningService extends Service {
     private class asyncTask_Gril_Two extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            for (int traning = 0; traning < 30000; traning++) {
+            for (int traning = 0; traning < 500000; traning++) {
                 Traning_GrilTwo();
             }
             return null;

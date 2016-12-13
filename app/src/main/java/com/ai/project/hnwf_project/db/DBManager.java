@@ -23,6 +23,23 @@ public class DBManager extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE if not exists '" + Contact.MAN_WEIGHT_TWO + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
         db.execSQL("CREATE TABLE if not exists '" + Contact.GIRL_WEIGHT_ONE + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
         db.execSQL("CREATE TABLE if not exists '" + Contact.GIRL_WEIGHT_TWO + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+
+
+        db.execSQL("CREATE TABLE if not exists '" + Contact.MID_MAN_WEIGHT_CHO + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.MID_MAN_WEIGHT_JUNG + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.MID_MAN_WEIGHT_JONG + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+
+        db.execSQL("CREATE TABLE if not exists '" + Contact.LAST_MAN_WEIGHT_CHO + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.LAST_MAN_WEIGHT_JUNG + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.LAST_MAN_WEIGHT_JONG + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+
+        db.execSQL("CREATE TABLE if not exists '" + Contact.MID_GIRL_WEIGHT_CHO + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.MID_GIRL_WEIGHT_JUNG + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.MID_GIRL_WEIGHT_JONG + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+
+        db.execSQL("CREATE TABLE if not exists '" + Contact.LAST_GIRL_WEIGHT_CHO + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.LAST_GIRL_WEIGHT_JUNG + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
+        db.execSQL("CREATE TABLE if not exists '" + Contact.LAST_GIRL_WEIGHT_JONG + "'( _id INTEGER PRIMARY KEY AUTOINCREMENT, json TEXT);");
     }
 
     @Override

@@ -11,7 +11,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.ai.project.hnwf_project.R;
-import com.ai.project.hnwf_project.fragment.InformationFragment;
+import com.ai.project.hnwf_project.fragment.NewInformationFragment;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         fragmentManager = getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.main_fragment, new InformationFragment());
+        fragmentTransaction.replace(R.id.main_fragment, new NewInformationFragment());
         fragmentTransaction.commit();
         main_image = (ImageView) findViewById(R.id.main_image);
         Picasso.with(this).load(R.drawable.ai_image).into(main_image);

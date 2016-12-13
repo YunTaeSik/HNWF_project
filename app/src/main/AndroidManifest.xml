@@ -21,7 +21,23 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Dialog"></activity>
 
-        <service android:name=".traing.TraningService" />
+        <service android:name=".traing_man.TraningService" />
+
+        <service android:name=".traing_man.Mid_ManCho_Service" />
+        <service android:name=".traing_man.Mid_ManJung_Service" />
+        <service android:name=".traing_man.Mid_ManJong_Service" />
+
+        <service android:name=".traing_man.Last_ManCho_Service" />
+        <service android:name=".traing_man.Last_ManJung_Service" />
+        <service android:name=".traing_man.Last_ManJong_Service" />
+
+        <service android:name=".traing_girl.Mid_GirlCho_Service" />
+        <service android:name=".traing_girl.Mid_GirlJung_Service" />
+        <service android:name=".traing_girl.Mid_GirlJong_Service" />
+
+        <service android:name=".traing_girl.Last_GirlCho_Service" />
+        <service android:name=".traing_girl.Last_GirlJung_Service" />
+        <service android:name=".traing_girl.Last_GirlJong_Service" />
     </application>
 
 </manifest>
