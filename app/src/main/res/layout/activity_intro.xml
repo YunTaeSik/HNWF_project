@@ -5,6 +5,16 @@
     android:layout_height="match_parent"
     android:background="@color/theme">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="어플을 종료해놓으셔도\n훈련이 완료되면 알림이 갑니다."
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
 
     <TextView
         android:id="@+id/loge_text"

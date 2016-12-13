@@ -31,7 +31,7 @@ import static java.lang.Math.exp;
 
 public class InformationFragment extends Fragment implements View.OnClickListener {
     private int input_count = 7;
-    private int hidden_count = 7;
+    private int hidden_count = 170;
     private int out_count = 3;
 
     private double first_w_man_one[][] = new double[input_count][hidden_count];
@@ -165,7 +165,6 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                         double time = Double.parseDouble(time_edit.getText().toString());
 
                         double input[] = {cho_index / 11.0, jung_index / 13.0, jong_index / 4.0, year / 100.0, month / 12.0, date / 31.0, time / 24.0};
-                        //double input[] = {2.0 / 11.0, 9.0 / 13.0, 0.0 / 4.0, 0.0 / 100.0, 11.0 / 12.0, 27.0 / 31.0, 3.0 / 24.0};
                         SetNameing_Man(input);
                     } else if (SEX.equals("여")) {
                         for (int i = 0; i < GetHangle.Girl_ChoSung_String.length; i++) {
@@ -268,7 +267,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         try {
             jsnobject = new JSONObject(json_girl_one);
             JSONArray jsonArray_girlone_f = jsnobject.getJSONArray("first_w_girl_one");
-            JSONArray jsonArray_girlone_s = jsnobject.getJSONArray("second_w_girl_one");
+            JSONArray jsonArray_girlone_s = jsnobject.getJSONArray("second_w_gril_one");
 
             for (int i = 0; i < jsonArray_girlone_f.length(); i++) {
                 for (int j = 0; j < jsonArray_girlone_f.getJSONArray(i).length(); j++) {
@@ -287,7 +286,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         try {
             jsnobject = new JSONObject(json_girl_two);
             JSONArray jsonArray_girltwo_f = jsnobject.getJSONArray("first_w_girl_two");
-            JSONArray jsonArray_girltwo_s = jsnobject.getJSONArray("second_w_girl_two");
+            JSONArray jsonArray_girltwo_s = jsnobject.getJSONArray("second_w_gril_two");
 
             for (int i = 0; i < jsonArray_girltwo_f.length(); i++) {
                 for (int j = 0; j < jsonArray_girltwo_f.getJSONArray(i).length(); j++) {
@@ -368,9 +367,13 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         String jung_one = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearJUNG(out_man_one[1])];
         String jong_one = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearJONG(out_man_one[2])];
 
+        Log.e("test", cho_one + jung_one + jong_one);
+
         String cho_two = GetHangle.Man_ChoSung_String[(int) GetNearValue.getNearCHO(out_man_two[0])];
         String jung_two = GetHangle.Man_JungSung_String[(int) GetNearValue.getNearJUNG(out_man_two[1])];
         String jong_two = GetHangle.Man_JongSung_String[(int) GetNearValue.getNearJONG(out_man_two[2])];
+
+        Log.e("test", cho_two + jung_two + jong_two);
         //한글 합치기 가운데 글자 시작//
         char[] a = cho_one.toCharArray();
         char[] b = jung_one.toCharArray();
