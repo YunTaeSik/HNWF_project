@@ -144,7 +144,7 @@ public class Last_GirlJong_Service extends Service {
 
         @Override
         protected Integer doInBackground(Integer... integers) {
-            for (int traning = 0; traning < 300000; traning++) {
+            for (int traning = 0; traning < 500000; traning++) {
                 Traning_ManOne();
             }
             return null;
