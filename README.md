@@ -100,8 +100,8 @@ public final static String[] Man_JongSung_String = {   //5개
 ## 이미지  
 
 <div>
-   <img src="https://user-images.githubusercontent.com/23161645/72855786-f8644480-3cfb-11ea-84e4-dc9e56ee107d.jpg" hspace=8>
-   <img src="https://user-images.githubusercontent.com/23161645/72855788-fbf7cb80-3cfb-11ea-8ae8-375c4d9d00b7.jpg" hspace=8>
-   <img src="https://user-images.githubusercontent.com/23161645/72855790-fd28f880-3cfb-11ea-8435-2c35ed84fc92.jpg" hspace=8>
+   <img src="https://user-images.githubusercontent.com/23161645/72855786-f8644480-3cfb-11ea-84e4-dc9e56ee107d.jpg" hspace=8 width="250">
+   <img src="https://user-images.githubusercontent.com/23161645/72855788-fbf7cb80-3cfb-11ea-8ae8-375c4d9d00b7.jpg" hspace=8 width="250">
+   <img src="https://user-images.githubusercontent.com/23161645/72855790-fd28f880-3cfb-11ea-8435-2c35ed84fc92.jpg" hspace=8 width="250">
 </div>
 
